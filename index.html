@@ -25,6 +25,43 @@
             color: white;
             font-family: Arial, sans-serif;
             z-index: 10;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        #inventory {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            color: white;
+            font-family: Arial, sans-serif;
+            z-index: 10;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .stat-bar {
+            width: 200px;
+            height: 20px;
+            background-color: #333;
+            border: 1px solid #fff;
+            margin: 5px 0;
+            overflow: hidden;
+        }
+
+        .stat-fill {
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+
+        #healthBar .stat-fill {
+            background-color: #f00;
+        }
+
+        #expBar .stat-fill {
+            background-color: #0f0;
         }
         
         #loadingScreen {
@@ -46,9 +83,18 @@
 <body>
     <div id="gameContainer">
         <div id="uiOverlay">
-            <div>Health: <span id="health">100</span>/100</div>
-            <div>Gold: <span id="gold">0</span></div>
             <div>Level: <span id="level">1</span></div>
+            <div>Experience: <span id="experience">0</span>/<span id="expToNextLevel">100</span></div>
+            <div class="stat-bar" id="expBar">
+                <div class="stat-fill" style="width: 0%"></div>
+            </div>
+            <div class="stat-bar" id="healthBar">
+                <div class="stat-fill" style="width: 100%"></div>
+            </div>
+        </div>
+        <div id="inventory">
+            <div>Gold: <span id="gold">0</span></div>
+            <div>Items: <span id="items">0</span></div>
         </div>
         <div id="loadingScreen">Loading Game...</div>
     </div>
