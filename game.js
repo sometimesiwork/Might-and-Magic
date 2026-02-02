@@ -6,6 +6,7 @@ let playerStats = {
     health: 100,
     maxHealth: 100,
     gold: 0,
+    items: [],
     level: 1,
     experience: 0,
     experienceToNextLevel: 100
@@ -13,9 +14,13 @@ let playerStats = {
 let keys = {};
 
 // Элементы UI
-const healthElement = document.getElementById('health');
-const goldElement = document.getElementById('gold');
 const levelElement = document.getElementById('level');
+const experienceElement = document.getElementById('experience');
+const expToNextLevelElement = document.getElementById('expToNextLevel');
+const goldElement = document.getElementById('gold');
+const itemsElement = document.getElementById('items');
+const healthBarFill = document.querySelector('#healthBar .stat-fill');
+const expBarFill = document.querySelector('#expBar .stat-fill');
 const loadingScreen = document.getElementById('loadingScreen');
 
 // Инициализация игры
@@ -278,19 +283,69 @@ function checkItemCollisions() {
 function openChest(chest) {
     chest.opened = true;
     playerStats.gold += chest.contents.gold;
-    scene.remove(chest.mesh); // Удаляем сундук из сцены
     
+    // Добавляем случайный предмет в инвентарь
+    const randomItem = getRandomItem();
+    playerStats.items.push(randomItem);
+    
+    // Добавляем опыт за открытие сундука
+    playerStats.experience += 25;
+    checkLevelUp();
+    
+    scene.remove(chest.mesh); // Удаляем сундук из сцены
+
     // Обновляем UI
     updateUI();
+
+    console.log(`Открыт сундук! Получено золото: ${chest.contents.gold}, предмет: ${randomItem.name} и опыт: 25`);
+}
+
+// Получение случайного предмета
+function getRandomItem() {
+    const itemsList = [
+        { name: "Меч", type: "weapon", damage: 10 },
+        { name: "Щит", type: "armor", defense: 5 },
+        { name: "Зелье здоровья", type: "potion", effect: "heal", value: 20 },
+        { name: "Кольцо силы", type: "accessory", bonus: 5 },
+        { name: "Амулет защиты", type: "accessory", bonus: 3 }
+    ];
     
-    console.log(`Открыт сундук! Получено золото: ${chest.contents.gold}`);
+    return itemsList[Math.floor(Math.random() * itemsList.length)];
+}
+
+// Проверка уровня
+function checkLevelUp() {
+    if (playerStats.experience >= playerStats.experienceToNextLevel) {
+        playerStats.level++;
+        playerStats.experience -= playerStats.experienceToNextLevel;
+        playerStats.experienceToNextLevel = Math.floor(playerStats.experienceToNextLevel * 1.5);
+        
+        // Увеличиваем максимальное здоровье при повышении уровня
+        playerStats.maxHealth += 20;
+        playerStats.health = playerStats.maxHealth; // Полностью восстанавливаем здоровье при левелапе
+        
+        console.log(`Поздравляем! Вы достигли уровня ${playerStats.level}!`);
+        
+        // Обновляем UI
+        updateUI();
+
+// Обновление интерфейса пользователя
 }
 
 // Обновление интерфейса пользователя
 function updateUI() {
-    healthElement.textContent = playerStats.health;
-    goldElement.textContent = playerStats.gold;
     levelElement.textContent = playerStats.level;
+    experienceElement.textContent = playerStats.experience;
+    expToNextLevelElement.textContent = playerStats.experienceToNextLevel;
+    
+    // Обновляем полосы прогресса
+    const healthPercent = (playerStats.health / playerStats.maxHealth) * 100;
+    const expPercent = (playerStats.experience / playerStats.experienceToNextLevel) * 100;
+    healthBarFill.style.width = `${healthPercent}%`;
+    expBarFill.style.width = `${expPercent}%`;
+    
+    goldElement.textContent = playerStats.gold;
+    itemsElement.textContent = playerStats.items.length;
 }
 
 // Основной игровой цикл
